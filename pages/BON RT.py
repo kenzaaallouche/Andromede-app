@@ -103,7 +103,7 @@ def load_data(file,option1,option2,option3,d):
 
 
 st.title('BACK OFFICE SARL ANDROMED DISTRIBUTION -ALGER CENTRE- 2023')
-st.text('Application Créée Par: ALLOUCHE KENZA')
+st.text('Application Créer Par: ALLOUCHE KENZA')
 
 st.session_state["Page1"]="Went Page1"
 
