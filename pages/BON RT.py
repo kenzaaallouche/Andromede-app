@@ -197,10 +197,6 @@ format_date(d, locale='en')
 st.write('DATE LIVRAISON:', d)
 st.divider()
 
-t = st.text_input('PATH', '-')
-st.write('---', t)
-st.divider()
-path = "/"
 if st.button('EXECUTE'):
     
 
