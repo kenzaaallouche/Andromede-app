@@ -91,7 +91,7 @@ def load_data(file,option1,option2,option3,d,t):
     sheet1['C'+str(a+9)]=x.strftime("%H:%M:%S")
     sheet1['B1'].value=str(option2)
     
-    
+    book1.save(option1+'.xlsx')
     book1.save(r""+t+"\\"+option1+'.xlsx')
 
     #df =  pd.read_excel (option1+'.xlsx')
