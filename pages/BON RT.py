@@ -208,7 +208,7 @@ if st.button('EXECUTE'):
     with open(option1+'.xlsx', "rb") as template_file:
         template_byte = template_file.read()
 
-    st.download_button(label="Click to Download Template File",
+    st.download_button(label="Download BON ",
                         data=template_byte,
                         file_name=option1+'.xlsx',
                         )
