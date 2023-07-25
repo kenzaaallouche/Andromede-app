@@ -15,7 +15,7 @@ from io import BytesIO
 import os
 
 @st.cache_data()
-def load_data(file,option1,option2,option3,d,t):
+def load_data(file,option1,option2,option3,d):
     
     book=load_workbook('R.xlsx')
     book1=load_workbook(file)
@@ -92,7 +92,7 @@ def load_data(file,option1,option2,option3,d,t):
     sheet1['B1'].value=str(option2)
     
     book1.save(option1+'.xlsx')
-    book1.save(r""+t+"\\"+option1+'.xlsx')
+    #book1.save(r""+t+"\\"+option1+'.xlsx')
 
     #df =  pd.read_excel (option1+'.xlsx')
     #df.to_excel(t+'\\'+option1+'.xlsx', index=False)
@@ -203,7 +203,7 @@ if st.button('EXECUTE'):
 # Join various path components
     
     #fill=
-    load_data(uploaded_file,option1,option2,option3,d,t)
+    load_data(uploaded_file,option1,option2,option3,d)
     """with open(option1+'.xlsx') as f:
         st.download_button('Download CSV', f)"""  # Defaults to 'text/plain'
     with open(option1+'.xlsx', "rb") as template_file:
