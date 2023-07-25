@@ -206,8 +206,11 @@ if st.button('EXECUTE'):
 
 # Join various path components
     
+    #fill=
     load_data(uploaded_file,option1,option2,option3,d,t)
-	with open(option1+'.xlsx', "rb") as template_file:
+    """with open(option1+'.xlsx') as f:
+        st.download_button('Download CSV', f)"""  # Defaults to 'text/plain'
+    with open(option1+'.xlsx', "rb") as template_file:
         template_byte = template_file.read()
 
     st.download_button(label="Click to Download Template File",
