@@ -1,59 +1,220 @@
 import streamlit as st
-import time
+import sys
+import datetime
 import numpy as np
 from PIL import Image
 import pandas as pd
 from st_aggrid import AgGrid, GridOptionsBuilder
 from st_aggrid.shared import GridUpdateMode
-import plotly.express as px
+from babel.dates import format_date, format_datetime, format_time
+import openpyxl
+from openpyxl import workbook,load_workbook,Workbook
+from openpyxl.styles import Font, Fill
+from openpyxl.styles.borders import Border, Side
+from io import BytesIO
+import os
 
 @st.cache_data()
-def load_data():
-    df =  pd.read_excel ('bdd.xlsx')
-    df=df.drop(['Region', 'City','Area','District ID', 'District Name', 'Salesman Name', 'Customer No','BUID', 'Points','Price', 'Value', 'Discount','Qty'], axis=1)
-    return df
-df= load_data()
-dfg=df.groupby(['Salesman No']).sum()
-df2=df.groupby(['Item Name','Item ID','Salesman No'], as_index=False).sum()
-df2['OBJECTIF CA HT']=df2['Net']-50
-df2['Realisation']=df2['Net']-df2['OBJECTIF CA HT']
-df3=pd.read_excel('ff.xlsx')
-df3
+def load_data(file,option1,option2,option3,d):
+    df1 =  pd.read_excel (file)
+    maxc=len(df1[~df1.duplicated('Customer Name')]['Customer Name'])
+    p=pd.pivot_table(df1, index=["Item ID","Item Name"], columns=['Customer Name'], values=['Net'], aggfunc=np.sum)
+    p.to_excel('FG.xlsx')
+    df =  pd.read_excel('FG.xlsx')
+    m='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    book1=load_workbook('FG.xlsx')
+    sheet1=book1.active
+    sheet1.unmerge_cells('C1:'+m[maxc]+str('1'))
+    for i, row in enumerate(sheet1):
+        sheet2=row
+    sheet1.delete_rows(1,1)
+    sheet1.delete_rows(2,1)
+    sheet1['A1'].value="Item ID"
+    sheet1['B1'].value="Item Name"
+    #sheet1.delete_rows(2,1)
+    book1.save("book.xlsx")
+    df =  pd.read_excel("book.xlsx")
+    df=df.fillna(0)
+    if option1 =='MM16F01':
+        book=load_workbook('MM.xlsx')
+    elif option1 =='SWS16F01':
+        book=load_workbook('SWS.xlsx')
+    else:
+        book=load_workbook('PS.xlsx')
+    a=book.sheetnames
+    for i in range(len(df.columns)): 
+    
+        ss_sheet1= book[a[i+1]]
+        print(df.columns[i+1])
+        ss_sheet1.title =df.columns[i+1]
+        ss_sheet1['B7'].value =df.columns[i+1]
+        
+        if i==len(df.columns)-2:
+            break
+    book.save("book1.xlsx")
+    if option1 =='MM16F01':
+        df2 =  pd.read_excel ("PRIXMM.xlsx")
+    elif option1 =='SWS16F01':
+        df2 =  pd.read_excel ("PRIXSWS.xlsx")
+    else:
+        df2 =  pd.read_excel ("PRIXPS.xlsx")
+    df3=pd.read_excel ("book.xlsx")
+    OP=df2.merge(df3, how='left', on='Item ID')
+    OP["ct"]=OP["NBRUN"]*OP["PRIXUN"]
+    OP=OP.fillna(0)
+    myList =list(OP.columns)
+    del myList[0:5]
+    del myList[len(myList)-1]
+    for i in myList:
+        OP[i]=OP[i]/OP["ct"]
+    OP=OP.fillna(0)
+    for i in myList:
+   
+        book.active= book[i]
+        sheet1=book.active
+        for t in range(len(OP['Item ID'])):
+            print(t)
+            sheet1['E'+str(t+12)].value=int(OP[i][t])
+            
+        print(OP[i][t])
+    book.save('fin.xlsx')   
+    OP["total"]=0
+    for i in myList:
+        
+        OP["total"]=OP["total"]+OP[i]
+    for t in range(len(OP['Item ID'])):
+        book.active= book['BON DE PREPARATION']
+        sheet1=book.active
+        print(t)
+        sheet1['E'+str(t+12)].value=int(OP["total"][t])
+    sheet1['B7'].value= option1+" -- "+option2
+    sheet1['B8'].value=option3
+    sheet1['B9'].value=d
+    book.save(option1+'.xlsx')   
 
-# Add column using np.where()
-df2['Discount_rating'] = df2['OBJECTIF CA HT'].where(df2['Item Name'].isin(df3['Item Name'])& df2['Salesman No'].isin(df3['Salesman No']))
-print(df2)
+st.title('BACK OFFICE SARL ANDROMED DISTRIBUTION -ALGER CENTRE- 2023')
+st.text('Application Créée Par: ALLOUCHE KENZA')
 
-gb = GridOptionsBuilder.from_dataframe(
-        df2, enableRowGroup=True, enableValue=True, enablePivot=True
+st.session_state["Page1"]="Went Page1"
+
+st.divider()
+st.header('DATA BASE:')
+uploaded_files = st.file_uploader("IMPORTER LE BON DE CHARGEMENT ", accept_multiple_files=True)
+for uploaded_file in uploaded_files:
+    bytes_data = uploaded_file.read()
+    print (type(bytes_data))
+    st.write("NOM DE FICHIER:", uploaded_file.name)
+st.divider()
+col1, col2,col3 = st.columns(3)
+
+
+with col1:
+    option1 = st.selectbox(
+        "ROUTE :",
+        ("MM16F01",
+         "SWS16F01",
+        "PS16F01",
+         "PS16F02",
+         "PS16F03",
+         "PS16F04",
+         "PS16F05",
+         "PS16F06",
+         "PS16F07",
+         "PS16F08",
+         "PS16F09",
+         "PS16F10",
+         "PS16F11",
+         "PS16F12",
+         "PS16F13",
+         "PS16F14",
+         "PS16F15",
+         "PS16F16",
+         "PS16F17",),
+        key="v1",
     )
-#gb.configure_pagination(enabled=True) #Add pagination
 
-#gb = GridOptionsBuilder.from_dataframe(df)
-#gb.configure_pagination(paginationAutoPageSize=True, paginationPageSize=50) #Add pagination
-gb.configure_side_bar() #Add a sidebar
-#gb.configure_selection( groupSelectsChildren = "Group checkbox select children") #Enable multi-row selection
+with col2:
+    option2 = st.selectbox(
+        "VENDEUR",
+        ("MANSOUR HICHEM",
+        "TOUADI MORAD",
+        "KRELIFAOUI YOUCEF",
+        "LOULANSSA KHALD",
+        "KADEM ISLAM",
+        "GUERRIDA M HAMED",
+        'ABDESSELAM FARID',
+        'OUBOUCHOU KAMEL',
+        'BRAHIMI BOUBEKEUR',
+        'YAHIAOUI YOUCEF',
+        'BENIGHINE MEROUANE',
+        'BOUDALI IMAD EDDINE',
+        'BENAOUANE SOFIANE',
+        'AMMAM ABDELKRIM',
+        'ourti yacine',
+        'DIAB ISMAIL',
+        'HAMADACHE SOFIANE',
+        'AHMED MENSOUR'
+        ),
+        key="v2",
+        
+    )
+with col3:
+    option3 = st.selectbox(
+        "LIVREUR",
+        (
+            'ZOUBRI AMINE',
+            'BELOUDINA RACHID',
+            'OUAHIB ABDERRAHMANE',
+            'LAOUANA FOUAD',
+            'SAID HADJAZ',
+            'LAOUAR ZAKARIA',
+            'ALIOUA AYOUB',
+            'MOHAMEDI MOKHTAR',
+            'BEN TEFRAOUINE FAHIM',
+            'GUERRASSI HOUSSEM',
+            'LEKBEDJ ABBES',
+            'ARABI ABDELLAH',
+            'EL KADI ABDELMADJID MADJED',
+            'TOUHAMI MOHAMED',
+            'REZZOUG IMAD',
+            'ESSEGHIR HOCINE',
+            'LEGAB BILEL',
+            'ACILA ABDELLAH',
+            'BENNOUI HACHEM',
 
-gridOptions = gb.build()
+        ),
+        key="v3",
+        
+    )
+st.divider()
 
-grid_response = AgGrid(
-    df2,
-    gridOptions=gridOptions,
-    data_return_mode='AS_INPUT', 
-    update_mode='MODEL_CHANGED', 
-    fit_columns_on_grid_load=False,
-    theme = 'streamlit',
-   # theme='streamlit',# ['streamlit', 'alpine', 'balham', 'material']
-    #height=900,
-    #width=5,
+d = st.date_input("CHOISIR UNE DATE LIVRAISON",datetime.datetime.now())
+format_date(d, locale='en')
+st.write('DATE LIVRAISON:', d)
+st.divider()
+
+if st.button('EXECUTE'):
     
-    
-    enable_enterprise_modules=True,
-     
-    
-    reload_data=True
-)
 
-data = grid_response['data']
-selected = grid_response['selected_rows'] 
-df = pd.DataFrame(selected)
+# Join various path components
+    
+    #fill=
+    load_data(uploaded_file,option1,option2,option3,d)
+    """with open(option1+'.xlsx') as f:
+        st.download_button('Download CSV', f)"""  # Defaults to 'text/plain'
+    with open(option1+'.xlsx', "rb") as template_file:
+        template_byte = template_file.read()
+
+    st.download_button(label="Click to Download Template File",
+                        data=template_byte,
+                        file_name=option1+'.xlsx',
+                        )
+
+    #fill=pd.ExcelWriter(option1+'.xlsx', engine='openpyxl')
+    #fill =fill.to_excel(index=False).encode('utf-8')
+    
+    #st.download_button(label='📥 Download Current Result',
+                                   # data=fill ,
+                                    #file_name= 'df_test.xlsx',
+                                   # mime="text/xlsx")
+
