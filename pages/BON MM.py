@@ -21,7 +21,8 @@ def load_data(file,option1,option2,option3,d):
     p=pd.pivot_table(df1, index=["Item ID","Item Name"], columns=['Customer Name'], values=['Net'], aggfunc=np.sum)
     p.to_excel('FG.xlsx')
     df =  pd.read_excel('FG.xlsx')
-    m='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    m=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN']
+    print(maxc)
     book1=load_workbook('FG.xlsx')
     sheet1=book1.active
     sheet1.unmerge_cells('C1:'+m[maxc]+str('1'))
@@ -74,7 +75,7 @@ def load_data(file,option1,option2,option3,d):
         sheet1=book.active
         for t in range(len(OP['Item ID'])):
             print(t)
-            sheet1['E'+str(t+12)].value=int(OP[i][t])
+            sheet1['E'+str(t+12)].value=OP[i][t]
             
         print(OP[i][t])
     book.save('fin.xlsx')   
@@ -86,7 +87,7 @@ def load_data(file,option1,option2,option3,d):
         book.active= book['BON DE PREPARATION']
         sheet1=book.active
         print(t)
-        sheet1['E'+str(t+12)].value=int(OP["total"][t])
+        sheet1['E'+str(t+12)].value=OP["total"][t]
     sheet1['B7'].value= option1+" -- "+option2
     sheet1['B8'].value=option3
     sheet1['B9'].value=d
@@ -138,6 +139,7 @@ with col2:
         "VENDEUR",
         ("MANSOUR HICHEM",
         "TOUADI MORAD",
+        'GUERRASSI HOUSSEM',
         "KRELIFAOUI YOUCEF",
         "LOULANSSA KHALD",
         "KADEM ISLAM",
@@ -148,9 +150,9 @@ with col2:
         'YAHIAOUI YOUCEF',
         'BENIGHINE MEROUANE',
         'BOUDALI IMAD EDDINE',
-        'BENAOUANE SOFIANE',
+        'EL KADI ABDELMADJID MADJED',
         'AMMAM ABDELKRIM',
-        'ourti yacine',
+        'OUARTI YACINE',
         'DIAB ISMAIL',
         'HAMADACHE SOFIANE',
         'AHMED MENSOUR'
@@ -171,7 +173,7 @@ with col3:
             'ALIOUA AYOUB',
             'MOHAMEDI MOKHTAR',
             'BEN TEFRAOUINE FAHIM',
-            'GUERRASSI HOUSSEM',
+            'ABDELLOUCHE NAZIM',
             'LEKBEDJ ABBES',
             'ARABI ABDELLAH',
             'EL KADI ABDELMADJID MADJED',
@@ -181,6 +183,7 @@ with col3:
             'LEGAB BILEL',
             'ACILA ABDELLAH',
             'BENNOUI HACHEM',
+            'BENBOUZID AYMEN '
 
         ),
         key="v3",
@@ -200,8 +203,7 @@ if st.button('EXECUTE'):
     
     #fill=
     load_data(uploaded_file,option1,option2,option3,d)
-    """with open(option1+'.xlsx') as f:
-        st.download_button('Download CSV', f)"""  # Defaults to 'text/plain'
+    
     with open(option1+'.xlsx', "rb") as template_file:
         template_byte = template_file.read()
 
