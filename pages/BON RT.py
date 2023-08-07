@@ -145,6 +145,8 @@ with col2:
     option2 = st.selectbox(
         "VENDEUR",
         ("MANSOUR HICHEM",
+        "TOUADI MORAD",
+        'GUERRASSI HOUSSEM',
         "KRELIFAOUI YOUCEF",
         "LOULANSSA KHALD",
         "KADEM ISLAM",
@@ -157,7 +159,7 @@ with col2:
         'BOUDALI IMAD EDDINE',
         'EL KADI ABDELMADJID MADJED',
         'AMMAM ABDELKRIM',
-        'ourti yacine',
+        'OUARTI YACINE',
         'DIAB ISMAIL',
         'HAMADACHE SOFIANE',
         'AHMED MENSOUR'
