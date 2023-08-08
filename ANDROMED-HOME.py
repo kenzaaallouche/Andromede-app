@@ -28,7 +28,9 @@ for uploaded_file in uploaded_files:
     st.write("filename:", uploaded_file.name)
     st.write(bytes_data)
 
-
+GithubIcon {
+  visibility: hidden;
+}
 
 df= load_data()
 dfg=df.groupby(['Salesman No']).sum()
