@@ -27,10 +27,14 @@ for uploaded_file in uploaded_files:
     bytes_data = uploaded_file.read()
     st.write("filename:", uploaded_file.name)
     st.write(bytes_data)
-
-GithubIcon {
+hide_github_icon = """
+#GithubIcon {
   visibility: hidden;
 }
+"""
+st.markdown(hide_github_icon, unsafe_allow_html=True)
+
+
 
 df= load_data()
 dfg=df.groupby(['Salesman No']).sum()
