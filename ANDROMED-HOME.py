@@ -8,16 +8,6 @@ import pandas as pd
 from st_aggrid import AgGrid, GridOptionsBuilder
 from st_aggrid.shared import GridUpdateMode
 import plotly.express as px
-
-@st.cache_data()
-def load_data():
-    df =  pd.read_excel ('bdd.xlsx')
-    df=df.drop(['Region', 'City','Area','District ID', 'District Name', 'Salesman Name', 'Customer No','BUID', 'Points','Price', 'Value', 'Discount','Qty'], axis=1)
-    return df
-
-
-import streamlit as st
-
 # Add custom CSS to hide the GitHub icon
 hide_github_icon = """
 #GithubIcon {
@@ -27,6 +17,16 @@ hide_github_icon = """
 st.markdown(hide_github_icon, unsafe_allow_html=True)
 
 # Your app code goes here
+@st.cache_data()
+def load_data():
+    df =  pd.read_excel ('bdd.xlsx')
+    df=df.drop(['Region', 'City','Area','District ID', 'District Name', 'Salesman Name', 'Customer No','BUID', 'Points','Price', 'Value', 'Discount','Qty'], axis=1)
+    return df
+
+
+
+
+
 # try both connected=False (the default) and connected=True
 st.title('SARL ANDROMED DISTRIBUTION -ALGER CENTRE- 2023')
 st.text('Application Créée Par: ALLOUCHE KENZA')
