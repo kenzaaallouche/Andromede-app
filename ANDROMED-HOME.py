@@ -16,7 +16,17 @@ def load_data():
     return df
 
 
+import streamlit as st
 
+# Add custom CSS to hide the GitHub icon
+hide_github_icon = """
+#GithubIcon {
+  visibility: hidden;
+}
+"""
+st.markdown(hide_github_icon, unsafe_allow_html=True)
+
+# Your app code goes here
 # try both connected=False (the default) and connected=True
 st.title('SARL ANDROMED DISTRIBUTION -ALGER CENTRE- 2023')
 st.text('Application Créée Par: ALLOUCHE KENZA')
