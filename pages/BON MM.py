@@ -10,6 +10,7 @@ from babel.dates import format_date, format_datetime, format_time
 import openpyxl
 from openpyxl import workbook,load_workbook,Workbook
 from openpyxl.styles import Font, Fill
+from openpyxl.formula.translate import Translator
 from openpyxl.styles.borders import Border, Side
 from io import BytesIO
 import os
@@ -83,14 +84,20 @@ def load_data(file,option1,option2,option3,d):
     for i in myList:
         
         OP["total"]=OP["total"]+OP[i]
+    nam=book.sheetnames
     for t in range(len(OP['Item ID'])):
         book.active= book['BON DE PREPARATION']
         sheet1=book.active
-        print(t)
-        sheet1['E'+str(t+12)].value=OP["total"][t]
-    sheet1['B7'].value= option1+" -- "+option2
-    sheet1['B8'].value=option3
-    sheet1['B9'].value=d
+        form='=+'
+        for y in nam:
+            if y=='BON DE PREPARATION' or y=='Item Name':
+                print ('non')
+            elif y != nam[-1]:
+                form=form+"'"+y+"'"+"!E"+str(t+12)+"+"
+            else:
+                form=form+"'"+y+"'"+"!E"+str(t+12)
+            
+        sheet1['E'+str(t+12)]=Translator(form, origin='E'+str(t+12)).translate_formula('E'+str(t+12))
     book.save(option1+'.xlsx')   
 
 st.title('BACK OFFICE SARL ANDROMED DISTRIBUTION -ALGER CENTRE- 2023')
