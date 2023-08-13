@@ -88,7 +88,7 @@ def load_data(file,option1,option2,option3,d):
     for t in range(len(OP['Item ID'])):
         book.active= book['BON DE PREPARATION']
         sheet1=book.active
-        form='=+'
+        form='='
         for y in nam:
             if y=='BON DE PREPARATION' or y=='Item Name':
                 print ('non')
