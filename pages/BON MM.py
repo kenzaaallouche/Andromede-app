@@ -71,7 +71,13 @@ def load_data(file,option1,option2,option3,d):
     OP=df2.merge(df3, how='left', on='Item ID')
     OP["ct"]=OP["NBRUN"]*OP["PRIXUN"]
     OP=OP.fillna(0)
-    myList =list(OP.columns)
+    myList =[]
+    for i in list(OP.columns):
+        
+        chars = ["'",',','.','!']
+     
+        res = i.translate(str.maketrans('', '', ''.join(chars)))
+        myList.append(res)
     del myList[0:5]
     del myList[len(myList)-1]
     for i in myList:
