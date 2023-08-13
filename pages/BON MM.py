@@ -44,14 +44,21 @@ def load_data(file,option1,option2,option3,d):
     else:
         book=load_workbook('PS.xlsx')
     a=book.sheetnames
-    for i in range(len(df.columns)): 
+    lis=[]
+    for v in df.columns:
+        
+        chars = ["'",',','.','!']
+     
+        res = v.translate(str.maketrans('', '', ''.join(chars)))
+        lis.append(res)
+    for i in range(len(lis)): 
     
         ss_sheet1= book[a[i+1]]
-        print(df.columns[i+1])
-        ss_sheet1.title =df.columns[i+1]
-        ss_sheet1['B7'].value =df.columns[i+1]
+        print(lis[i+1])
+        ss_sheet1.title =lis[i+1]
+        ss_sheet1['B7'].value =lis[i+1]
         
-        if i==len(df.columns)-2:
+        if i==len(lis)-2:
             break
     book.save("book1.xlsx")
     if option1 =='MM16F01':
@@ -88,7 +95,7 @@ def load_data(file,option1,option2,option3,d):
     for t in range(len(OP['Item ID'])):
         book.active= book['BON DE PREPARATION']
         sheet1=book.active
-        form='+'
+        form='=+'
         for y in nam:
             if y=='BON DE PREPARATION' or y=='Item Name':
                 print ('non')
