@@ -78,6 +78,7 @@ def load_data(file,option1,option2,option3,d):
      
         res = i.translate(str.maketrans('', '', ''.join(chars)))
         myList.append(res)
+    OP.columns=myList
     del myList[0:5]
     del myList[len(myList)-1]
     for i in myList:
