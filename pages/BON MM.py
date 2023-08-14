@@ -113,6 +113,14 @@ def load_data(file,option1,option2,option3,d):
             
         sheet1['E'+str(t+12)]=Translator(form, origin='E'+str(t+12)).translate_formula('E'+str(t+12))
     book.save(option1+'.xlsx')   
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_st_style, unsafe_allow_html=True)
 
 st.title('BACK OFFICE SARL ANDROMED DISTRIBUTION -ALGER CENTRE- 2023')
 st.text('Application Créée Par: ALLOUCHE KENZA')
