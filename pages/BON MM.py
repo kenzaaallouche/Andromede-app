@@ -112,6 +112,9 @@ def load_data(file,option1,option2,option3,d):
                 form=form+"'"+y+"'"+"!E"+str(t+12)
             
         sheet1['E'+str(t+12)]=Translator(form, origin='E'+str(t+12)).translate_formula('E'+str(t+12))
+    sheet1['B7']=option1+'-'+option2
+    sheet1['B8']=option3
+    sheet1['B9']=d
     book.save(option1+'.xlsx')   
 hide_st_style = """
             <style>
