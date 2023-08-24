@@ -20,52 +20,68 @@ def grat(file,option1,option2,option3,d):
     df =  pd.read_excel (file)
     df=df.drop(['Salesman No','Region', 'City','Area','District ID', 'District Name', 'Salesman Name', 'Customer No','BUID', 'Points','Price', 'Value', 'Net','Invoice ID','Date','Time',], axis=1)
     df = df.loc[df["Discount"] != 0]
+    
     dfg=df.groupby(['Customer Name','Item ID','Item Name'], as_index=False).sum()
     p=pd.pivot_table(dfg,index=["Item ID","Item Name"], 
                      columns=['Customer Name'], 
                      values=['Qty'], aggfunc=np.sum)
     o=p.stack(dropna=True)
     o=o.unstack(level=2)
-    o.to_excel ('e.xlsx')
-    book=load_workbook('e.xlsx')
-    sheet=book.active
-    sheet.delete_rows(1,1)
-    sheet.delete_rows(2,1)
-    sheet['A1'].value='Item ID'
-    book.save("e.xlsx")
-    o=pd.read_excel ('e.xlsx')
-    o=o.fillna(0)
-    #o.columns
-    myList =[]
-    for i in list(o.columns):
+    if o.size !=0:
+        o.to_excel ('e.xlsx')
+        book=load_workbook('e.xlsx')
+        sheet=book.active
+        sheet.delete_rows(1,1)
+        sheet.delete_rows(2,1)
+        sheet['A1'].value='Item ID'
+        book.save("e.xlsx")
+        o=pd.read_excel ('e.xlsx')
+        o=o.fillna(0)
+        #o.columns
+        myList =[]
+        for i in list(o.columns):
+            
+            chars = ["'",',','.','!']
         
-        chars = ["'",',','.','!']
-     
-        res = i.translate(str.maketrans('', '', ''.join(chars)))
-        myList.append(res)
-    o.columns=myList
-    myList =list(o.columns)
-    #del myList[0:2]
-    #del myList[len(myList)-1]
-    #del myList[len(myList)-1]
-    #del myList[len(myList)-1]
-   
-    t=pd.read_excel ('pro.xlsx')
-    o=t.merge(o, how='left', on='Item ID')
-    o=o.fillna(0)
-    book=load_workbook(option1+'.xlsx')
-    for i in myList:
-       # print(i)
-        if i in book.sheetnames:
-            book.active= book[i]
+            res = i.translate(str.maketrans('', '', ''.join(chars)))
+            myList.append(res)
+        o.columns=myList
+        myList =list(o.columns)
+        #del myList[0:2]
+        #del myList[len(myList)-1]
+        #del myList[len(myList)-1]
+        #del myList[len(myList)-1]
+    
+        t=pd.read_excel ('pro.xlsx')
+        o=t.merge(o, how='left', on='Item ID')
+        o=o.fillna(0)
+        book=load_workbook(option1+'.xlsx')
+        for i in myList:
+        # print(i)
+            if i in book.sheetnames:
+                book.active= book[i]
+                sheet1=book.active
+                for t in range(len(o['Item ID'])):
+                    print(o['Item ID'])
+
+                    sheet1['D'+str(t+47)].value=o[i][t]
+
+                #print(o[i][t])
+        nam=book.sheetnames
+        for t in range(len(o['Item ID'])):
+            book.active= book['BON DE PREPARATION']
             sheet1=book.active
-            for t in range(len(o['Item ID'])):
-                print(o['Item ID'])
-
-                sheet1['D'+str(t+47)].value=o[i][t]
-
-            #print(o[i][t])
-    book.save(option1+'.xlsx') 
+            form='=+'
+            for y in nam:
+                if y=='BON DE PREPARATION' or y=='Item Name':
+                    print ('non')
+                elif y != nam[-1]:
+                    form=form+"'"+y+"'"+"!D"+str(t+47)+"+"
+                else:
+                    form=form+"'"+y+"'"+"!D"+str(t+47)
+                
+            sheet1['D'+str(t+47)]=Translator(form, origin='D'+str(t+47)).translate_formula('D'+str(t+47))
+        book.save(option1+'.xlsx') 
 
 
 @st.cache_data()
