@@ -16,6 +16,59 @@ from io import BytesIO
 import os
 
 @st.cache_data()
+def grat(file,option1,option2,option3,d):
+    df =  pd.read_excel (file)
+    df=df.drop(['Salesman No','Region', 'City','Area','District ID', 'District Name', 'Salesman Name', 'Customer No','BUID', 'Points','Price', 'Value', 'Net','Invoice ID','Date','Time',], axis=1)
+    df = df.loc[df["Discount"] != 0]
+    dfg=df.groupby(['Customer Name','Item ID','Item Name'], as_index=False).sum()
+    p=pd.pivot_table(dfg,index=["Item ID","Item Name"], 
+                     columns=['Customer Name'], 
+                     values=['Qty'], aggfunc=np.sum)
+    o=p.stack(dropna=True)
+    o=o.unstack(level=2)
+    o.to_excel ('e.xlsx')
+    book=load_workbook('e.xlsx')
+    sheet=book.active
+    sheet.delete_rows(1,1)
+    sheet.delete_rows(2,1)
+    sheet['A1'].value='Item ID'
+    book.save("e.xlsx")
+    o=pd.read_excel ('e.xlsx')
+    o=o.fillna(0)
+    #o.columns
+    myList =[]
+    for i in list(o.columns):
+        
+        chars = ["'",',','.','!']
+     
+        res = i.translate(str.maketrans('', '', ''.join(chars)))
+        myList.append(res)
+    o.columns=myList
+    myList =list(o.columns)
+    #del myList[0:2]
+    #del myList[len(myList)-1]
+    #del myList[len(myList)-1]
+    #del myList[len(myList)-1]
+   
+    t=pd.read_excel ('pro.xlsx')
+    o=t.merge(o, how='left', on='Item ID')
+    o=o.fillna(0)
+    book=load_workbook(option1+'.xlsx')
+    for i in myList:
+       # print(i)
+        if i in book.sheetnames:
+            book.active= book[i]
+            sheet1=book.active
+            for t in range(len(o['Item ID'])):
+                print(o['Item ID'])
+
+                sheet1['D'+str(t+47)].value=o[i][t]
+
+            #print(o[i][t])
+    book.save(option1+'.xlsx') 
+
+
+@st.cache_data()
 def load_data(file,option1,option2,option3,d):
     df1 =  pd.read_excel (file)
     maxc=len(df1[~df1.duplicated('Customer Name')]['Customer Name'])
@@ -54,7 +107,7 @@ def load_data(file,option1,option2,option3,d):
     for i in range(len(lis)): 
     
         ss_sheet1= book[a[i+1]]
-        print(lis[i+1])
+        #print(lis[i+1])
         ss_sheet1.title =lis[i+1]
         ss_sheet1['B7'].value =lis[i+1]
         
@@ -84,15 +137,17 @@ def load_data(file,option1,option2,option3,d):
     for i in myList:
         OP[i]=OP[i]/OP["ct"]
     OP=OP.fillna(0)
+    #book.sheetnames
     for i in myList:
-   
-        book.active= book[i]
-        sheet1=book.active
-        for t in range(len(OP['Item ID'])):
-            print(t)
-            sheet1['E'+str(t+12)].value=OP[i][t]
-            
-        print(OP[i][t])
+        if i in book.sheetnames:
+            book.active= book[i]
+        
+            sheet1=book.active
+            for t in range(len(OP['Item ID'])):
+                #print(t)
+                sheet1['E'+str(t+12)].value=OP[i][t]
+                
+            #print(OP[i][t])
     book.save('fin.xlsx')   
     OP["total"]=0
     for i in myList:
@@ -169,25 +224,27 @@ with col1:
 with col2:
     option2 = st.selectbox(
         "VENDEUR",
+        
         ("MANSOUR HICHEM",
-        "TOUADI MORAD",
-        'GUERRASSI HOUSSEM',
+        "GUERRASSI HOUSSEM EDDINE",
         "KRELIFAOUI YOUCEF",
-        "LOULANSSA KHALD",
+        "LOULANSSA KHALED",
         "KADEM ISLAM",
-        "GUERRIDA M HAMED",
-        'ABDESSELAM FARID',
-        'OUBOUCHOU KAMEL',
-        'BRAHIMI BOUBEKEUR',
-        'YAHIAOUI YOUCEF',
-        'BENIGHINE MEROUANE',
-        'BOUDALI IMAD EDDINE',
-        'EL KADI ABDELMADJID MADJED',
-        'AMMAM ABDELKRIM',
-        'OUARTI YACINE',
-        'DIAB ISMAIL',
-        'HAMADACHE SOFIANE',
-        'AHMED MENSOUR'
+        "GUERRIDA M'HAMED",
+        "ABDESSELAM FARID",
+        "OUBOUCHOU KAMEL",
+        "BRAHIMI BOUBEKEUR",
+        "YAHIAOUI  YOUCEF",
+        "BENIGHIL MEROUANE",
+        "BOUDALI IMAD EDDINE",
+        "EL KADI ABDELMADJID MADJED",
+        "AMMAM ABDELKRIM",
+        "OUARTI YACINE",
+        "DIAB ISMAIL",
+        "HAMADACHE SOFIANE",
+        "MANSOUR AHMED",
+        "TOUADI  MOURAD",
+
         ),
         key="v2",
         
@@ -196,26 +253,29 @@ with col3:
     option3 = st.selectbox(
         "LIVREUR",
         (
-            'ZOUBRI AMINE',
-            'BELOUDINA RACHID',
-            'OUAHIB ABDERRAHMANE',
-            'LAOUANA FOUAD',
-            'SAID HADJAZ',
-            'LAOUAR ZAKARIA',
-            'ALIOUA AYOUB',
-            'MOHAMEDI MOKHTAR',
-            'BEN TEFRAOUINE FAHIM',
-            'ABDELLOUCHE NAZIM',
-            'LEKBEDJ ABBES',
-            'ARABI ABDELLAH',
-            'EL KADI ABDELMADJID MADJED',
-            'TOUHAMI MOHAMED',
-            'REZZOUG IMAD',
-            'ESSEGHIR HOCINE',
-            'LEGAB BILEL',
-            'ACILA ABDELLAH',
-            'BENNOUI HACHEM',
-            'BENBOUZID AYMEN '
+            "ZOUBIRI AMINE",
+            "OUAHIB ABDERRAHMANE",
+            "LAOUANA FOUAD",
+            "HADJAZ  SAID",
+            "LAOUAR ZAKARIA ",
+            "ABDELLOUCHE NAZIM",
+            "ALIOUA AYOUB",
+            "MOHAMEDI MOKHTAR",
+            "BEN TEFRAOUINE FAHIM",
+            "KAHLICHE  ZIN EDDINE",
+            "LEKBEDJ ABBES",
+            "ARABI  ABDELLAH",
+            "BELHAMRI KADOUR ZAKI",
+            "TOUHAMI MOHAMED",
+            "REZZOUG IMAD ",
+            "DAHOUMANE ABDERREZAK",
+            "ESSEGHIR HOCINE ",
+            "ACHEREF MAHDI",
+            "LEGAB BILLEL",
+            "ACILA ABDELLAH",
+            "BENNOUI HACHEM",
+            "BELOUDINA RACHID",
+
 
         ),
         key="v3",
@@ -235,6 +295,7 @@ if st.button('EXECUTE'):
     
     #fill=
     load_data(uploaded_file,option1,option2,option3,d)
+    grat(uploaded_file,option1,option2,option3,d)
     
     with open(option1+'.xlsx', "rb") as template_file:
         template_byte = template_file.read()
